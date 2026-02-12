@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+
+Map<String, String> fakeDatabase = {
+  "lakoukajou@gmail.com": "poutimoun",
+};
+
 void main() {
   runApp(const MyApp());
 }
@@ -7,115 +12,465 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+    return const Scaffold(
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('You have pushed the button this many times:'),
+            Icon(Icons.flutter_dash, size: 90, color: Colors.blue),
+            SizedBox(height: 20),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              "Aprann ak kè kontan",
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+class VirtualKeyboard extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onClose;
+
+  const VirtualKeyboard({
+    super.key,
+    required this.controller,
+    required this.onClose,
+  });
+
+  void addText(String value) {
+    controller.text += value;
+    controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: controller.text.length),
+    );
+  }
+
+  void deleteText() {
+    if (controller.text.isNotEmpty) {
+      controller.text =
+          controller.text.substring(0, controller.text.length - 1);
+      controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: controller.text.length),
+      );
+    }
+  }
+
+  Widget buildKey(String text,
+      {VoidCallback? onPressed, int flex = 1}) {
+    return Expanded(
+      flex: flex,
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: SizedBox(
+          height: 36,
+          child: ElevatedButton(
+            onPressed: onPressed ?? () => addText(text),
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(9),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildRow(List<String> keys) {
+    return Row(
+      children: keys.map((k) => buildKey(k)).toList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey.shade200,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildRow(["1","2","3","4","5","6","7","8","9","0"]),
+          buildRow(["q","w","e","r","t","y","u","i","o","p"]),
+          buildRow(["a","s","d","f","g","h","j","k","l"]),
+          buildRow(["z","x","c","v","b","n","m","@","."]),
+          Row(
+            children: [
+              buildKey("Space",
+                  onPressed: () => addText(" "), flex: 3),
+              buildKey("⌫",
+                  onPressed: deleteText, flex: 2),
+              buildKey("Fèmen",
+                  onPressed: onClose, flex: 2),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  TextEditingController? activeController;
+
+  bool isValidEmail(String email) {
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+  }
+
+  void openKeyboard(TextEditingController controller) {
+    setState(() => activeController = controller);
+  }
+
+  void closeKeyboard() {
+    setState(() => activeController = null);
+  }
+
+  void login() {
+    closeKeyboard();
+
+    if (_formKey.currentState!.validate()) {
+      if (fakeDatabase.containsKey(emailController.text) &&
+          fakeDatabase[emailController.text] ==
+              passwordController.text) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                HomePage(email: emailController.text),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Imel oubyen modpas enkòrèk")),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Koneksyon")),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: emailController,
+                      readOnly: true,
+                      onTap: () =>
+                          openKeyboard(emailController),
+                      decoration: const InputDecoration(
+                        labelText: "Imel",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty) {
+                          return "Imel la obligatwa";
+                        }
+                        if (!isValidEmail(value)) {
+                          return "Imel la pa nan bon fòma";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: passwordController,
+                      readOnly: true,
+                      obscureText: true,
+                      onTap: () =>
+                          openKeyboard(passwordController),
+                      decoration: const InputDecoration(
+                        labelText: "Modpas",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty) {
+                          return "Modpas la obligatwa";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: login,
+                      child: const Text("Koneksyon"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        closeKeyboard();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                            const SignupPage(),
+                          ),
+                        );
+                      },
+                      child:
+                      const Text("Pa gen kont? Kreye youn"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (activeController != null)
+            VirtualKeyboard(
+              controller: activeController!,
+              onClose: closeKeyboard,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmController = TextEditingController();
+
+  TextEditingController? activeController;
+
+  bool isValidEmail(String email) {
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+  }
+
+  void openKeyboard(TextEditingController controller) {
+    setState(() => activeController = controller);
+  }
+
+  void closeKeyboard() {
+    setState(() => activeController = null);
+  }
+
+  void signup() {
+    closeKeyboard();
+
+    if (_formKey.currentState!.validate()) {
+      if (fakeDatabase.containsKey(emailController.text)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Imel sa egziste deja")),
+        );
+      } else {
+        fakeDatabase[emailController.text] =
+            passwordController.text;
+
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Bravo! Kont ou an kreye")),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar:
+      AppBar(title: const Text("Anrejistre")),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding:
+              const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: emailController,
+                      readOnly: true,
+                      onTap: () =>
+                          openKeyboard(emailController),
+                      decoration:
+                      const InputDecoration(
+                        labelText: "Imel",
+                        border:
+                        OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty) {
+                          return "Imel la obligatwa";
+                        }
+                        if (!isValidEmail(value)) {
+                          return "Imel la pa nan bon fòma";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller:
+                      passwordController,
+                      readOnly: true,
+                      obscureText: true,
+                      onTap: () =>
+                          openKeyboard(
+                              passwordController),
+                      decoration:
+                      const InputDecoration(
+                        labelText: "Modpas",
+                        border:
+                        OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty) {
+                          return "Modpas la obligatwa";
+                        }
+                        if (value.length < 8) {
+                          return "Mete 8 karaktè pou pi piti";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller:
+                      confirmController,
+                      readOnly: true,
+                      obscureText: true,
+                      onTap: () =>
+                          openKeyboard(
+                              confirmController),
+                      decoration:
+                      const InputDecoration(
+                        labelText:
+                        "Komfime Modpas",
+                        border:
+                        OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value !=
+                            passwordController
+                                .text) {
+                          return "Modpas yo pa menm";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: signup,
+                      child: const Text(
+                          "Kreye Kont"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (activeController != null)
+            VirtualKeyboard(
+              controller: activeController!,
+              onClose: closeKeyboard,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final String email;
+
+  const HomePage(
+      {super.key, required this.email});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Akèy"),
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Text(
+          "Byenvini, $email",
+          style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
