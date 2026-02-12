@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "dart:async";
 
 
 Map<String, String> fakeDatabase = {
@@ -42,14 +43,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("Imaj/logo.png",
-            width = 100,
-            height = 100
+            Image.asset(
+                "Imaj/logo.png",
+            width: 100,
+            height: 100,
             ),
             SizedBox(height: 20),
             Text(
