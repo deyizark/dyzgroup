@@ -47,7 +47,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.flutter_dash, size: 90, color: Colors.blue),
+            Image.asset("Imaj/logo.png",
+            width = 100,
+            height = 100
+            ),
             SizedBox(height: 20),
             Text(
               "Aprann ak kè kontan",
